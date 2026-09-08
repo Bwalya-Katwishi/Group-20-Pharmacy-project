@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ product }} · Sign in</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="login-page">
+  <section class="login-hero">
+    <div class="hero-mark">Rx</div>
+    <h1>{{ product }}</h1>
+    <p class="tagline">{{ product_tagline }} for retail pharmacies in Zambia</p>
+    <ul>
+      <li>Counter sales with batch expiry and stock checks</li>
+      <li>Prescription capture for controlled medicines</li>
+      <li>Cash, card, and mobile money payment recording</li>
+      <li>Inventory, reporting, and full audit trail</li>
+    </ul>
+    <div class="pharmacy-name">
+      {% if settings and settings.name %}
+      <strong>{{ settings.name }}</strong><br>
+      {{ settings.address or "" }}{% if settings.phone %} · {{ settings.phone }}{% endif %}
+      {% else %}
+      Configure your pharmacy name under Settings after first login.
+      {% endif %}
+    </div>
+  </section>
+  <section class="login-panel">
+    <form class="login-form" method="post" action="/login">
+      <h2>Staff sign in</h2>
+      <p class="subtitle">Enter your pharmacy account credentials</p>
+      {% if error %}<div class="flash err">{{ error }}</div>{% endif %}
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" required autofocus>
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+      <p style="margin-top:24px">
+        <button class="btn lg block" type="submit">Sign in to workspace</button>
+      </p>
+      <p class="hint">Your role (Administrator or Pharmacist) is determined by your account.</p>
+    </form>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% set title = "Manage suppliers" %}
+{% block body %}
+<div class="card">
+  <table>
+    <tr><th>Name</th><th>Phone</th><th>Address</th><th>Active</th></tr>
+    {% for s in rows %}
+    <tr><td>{{ s.name }}</td><td>{{ s.phone or "" }}</td><td>{{ s.address or "" }}</td><td>{{ "Yes" if s.is_active else "No" }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h2>Add / note</h2>
+  <form method="post" action="/admin/suppliers">
+    <label>Name</label><input name="name" required>
+    <label>Phone</label><input name="phone">
+    <label>Address</label><input name="address">
+    <label><input type="checkbox" name="is_active" checked> Active</label>
+    <p><button class="btn" type="submit">Save supplier</button></p>
+  </form>
+  <p class="muted">Suppliers are not system users and cannot log in.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% set title = "Adjust stock" %}
+{% block body %}
+<div class="card" style="max-width:720px">
+  <form method="post" action="/admin/inventory/adjust">
+    <label>Batch</label>
+    <select name="batch_id" required>
+      {% for b in batches %}
+      <option value="{{ b.batch_id }}">{{ b.medicine.name }} · {{ b.batch_number }} · exp {{ b.expiry_date }} · {{ b.quantity_on_hand }} on hand</option>
+      {% endfor %}
+    </select>
+    <label>Quantity change (use negative to remove)</label>
+    <input type="number" name="quantity_delta" required>
+    <label>Reason</label>
+    <select name="reason" required>
+      <option value="DAMAGE">Damage</option>
+      <option value="EXPIRY">Expiry removal</option>
+      <option value="RECOUNT">Recount</option>
+      <option value="RECALL">Recall</option>
+    </select>
+    <label>Note</label>
+    <input name="note">
+    <p><button class="btn" type="submit">Adjust</button></p>
+  </form>
+</div>
+{% endblock %}

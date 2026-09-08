@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% set title = "Manage users" %}
+{% block body %}
+<p class="note">Only two roles can be assigned. There is no Cashier, Manager, or Inventory Clerk role.</p>
+<div class="card">
+  <table>
+    <tr><th>Username</th><th>Full name</th><th>Role</th><th>Active</th></tr>
+    {% for u in rows %}
+    <tr>
+      <td>{{ u.username }}</td>
+      <td>{{ u.full_name }}</td>
+      <td>{{ "Pharmacist/Cashier" if u.role=="PHARMACIST" else "Administrator" }}</td>
+      <td>{{ "Yes" if u.is_active else "No" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h2>Create user</h2>
+  <form method="post" action="/admin/users">
+    <div class="row">
+      <div><label>Username</label><input name="username" required></div>
+      <div><label>Full name</label><input name="full_name" required></div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Role</label>
+        <select name="role">
+          <option value="ADMINISTRATOR">Administrator</option>
+          <option value="PHARMACIST">Pharmacist/Cashier</option>
+        </select>
+      </div>
+      <div><label>Initial password</label><input name="password" type="password" required minlength="8"></div>
+    </div>
+    <p><button class="btn" type="submit">Create</button></p>
+  </form>
+</div>
+<div class="card">
+  <h2>Update user</h2>
+  <form method="post" action="/admin/users">
+    <label>User</label>
+    <select name="user_id">
+      {% for u in rows %}<option value="{{ u.user_id }}">{{ u.username }}</option>{% endfor %}
+    </select>
+    <label>Full name</label><input name="full_name" required>
+    <label>Role</label>
+    <select name="role">
+      <option value="ADMINISTRATOR">Administrator</option>
+      <option value="PHARMACIST">Pharmacist/Cashier</option>
+    </select>
+    <label>New password (leave blank to keep)</label><input name="password" type="password" minlength="8">
+    <label><input type="checkbox" name="is_active" checked> Active</label>
+    <p><button class="btn navy" type="submit">Update</button></p>
+  </form>
+</div>
+{% endblock %}

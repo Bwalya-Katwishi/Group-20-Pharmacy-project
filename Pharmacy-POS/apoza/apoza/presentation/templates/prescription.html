@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% set title = "Attach prescription" %}
+{% block body %}
+<div class="card" style="max-width:640px">
+  <p class="note">Required when a line is prescription-only (FR-06). The system records the script; it does not contact a national e-prescription service.</p>
+  {% if not sale.customer %}
+    <p>Link a customer first.</p>
+    <p><a class="btn" href="/pos/customers">Find / add customer</a></p>
+  {% else %}
+  <form method="post" action="/pos/prescription">
+    <input type="hidden" name="customer_id" value="{{ sale.customer.customer_id }}">
+    <label>Customer</label>
+    <input value="{{ sale.customer.full_name }}" disabled>
+    <label>Prescription reference</label>
+    <input name="reference_no" required>
+    <label>Prescriber (optional)</label>
+    <input name="prescriber_name">
+    <label>Issued on</label>
+    <input name="issued_on" type="date">
+    <p><button class="btn" type="submit">Attach &amp; continue</button></p>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

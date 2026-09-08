@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% set title = "Find customer" %}
+{% block body %}
+<div class="card">
+  <form class="row" method="get" action="/pos/customers">
+    <div><label>Name or phone</label><input name="q" value="{{ q }}"></div>
+    <button class="btn" type="submit">Search</button>
+  </form>
+  <table>
+    <tr><th>Name</th><th>Phone</th><th></th></tr>
+    {% for c in found %}
+    <tr>
+      <td>{{ c.full_name }}</td>
+      <td>{{ c.phone or "" }}</td>
+      <td>
+        <form method="post" action="/pos/customers/{{ c.customer_id }}/select">
+          <button class="btn" type="submit">Use on this sale</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h2>Record a new customer</h2>
+  <form method="post" action="/pos/customers">
+    <label>Full name</label><input name="full_name" required>
+    <label>Phone</label><input name="phone">
+    <label>Address</label><input name="address">
+    <p><button class="btn" type="submit">Save and link</button></p>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% set title = "Manage inventory" %}
+{% block body %}
+<p><a class="btn" href="/admin/inventory/receive">Receive stock</a> <a class="btn navy" href="/admin/inventory/adjust">Adjust stock</a></p>
+<div class="card">
+  <table>
+    <tr><th>Medicine</th><th>Batch</th><th>Expiry</th><th>On hand</th><th>Sellable?</th></tr>
+    {% for b in batches %}
+    <tr>
+      <td>{{ b.medicine.name }}</td>
+      <td>{{ b.batch_number }}</td>
+      <td>{{ b.expiry_date }}</td>
+      <td>{{ b.quantity_on_hand }}</td>
+      <td>{{ "Yes" if b.expiry_date >= today and b.quantity_on_hand > 0 else "No — expired or empty" }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <p class="muted">Expired batches stay visible for audit but cannot be chosen by enterItem.</p>
+</div>
+{% endblock %}

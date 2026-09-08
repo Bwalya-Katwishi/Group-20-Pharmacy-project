@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% set title = "Today's sales" %}
+{% block body %}
+<div class="card">
+  <table>
+    <tr><th>Sale</th><th>Time</th><th>Status</th><th>Total</th><th>Method</th><th></th></tr>
+    {% for s in rows %}
+    <tr>
+      <td>#S-{{ s.sale_id }}</td>
+      <td>{{ s.started_at }}</td>
+      <td>{{ s.status }}</td>
+      <td>{{ "%.2f"|format(s.total) }}</td>
+      <td>{{ s.payment.method if s.payment else "—" }}</td>
+      <td>{% if s.status == "COMPLETED" %}<a href="/pos/receipt/{{ s.sale_id }}">Receipt</a>{% endif %}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6">No sales yet today.</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

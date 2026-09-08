@@ -1,0 +1,15 @@
+services:
+  pharmapoint:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY:-change-this-to-a-long-random-string-before-production}
+      DATABASE_URL: sqlite:////app/data/pharmacy.db
+      SEED_ON_START: "true"
+    volumes:
+      - pharmacy-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  pharmacy-data:

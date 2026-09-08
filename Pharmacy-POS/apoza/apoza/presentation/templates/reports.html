@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% set title = "Reports" %}
+{% block body %}
+<div class="card">
+  <form class="row" method="get" action="/admin/reports">
+    <div>
+      <label>Report</label>
+      <select name="kind">
+        <option value="sales" {{ "selected" if kind=="sales" }}>Period sales</option>
+        <option value="low" {{ "selected" if kind=="low" }}>Low stock</option>
+        <option value="expiry" {{ "selected" if kind=="expiry" }}>Near expiry</option>
+      </select>
+    </div>
+    <div><label>From</label><input type="date" name="start" value="{{ start }}"></div>
+    <div><label>To</label><input type="date" name="end" value="{{ end }}"></div>
+    <button class="btn" type="submit">Show</button>
+  </form>
+</div>
+{% if kind == "sales" %}
+<div class="card">
+  <p><strong>{{ count }}</strong> completed sales · <strong>{{ settings.currency_code }} {{ "%.2f"|format(total) }}</strong></p>
+  <table>
+    <tr><th>Time</th><th>Sale</th><th>Pharmacist</th><th>Total</th><th>Method</th></tr>
+    {% for s in rows %}
+    <tr>
+      <td>{{ s.completed_at }}</td>
+      <td>#S-{{ s.sale_id }}</td>
+      <td>{{ s.sold_by.full_name }}</td>
+      <td>{{ "%.2f"|format(s.total) }}</td>
+      <td>{{ s.payment.method if s.payment else "—" }}</td>
+    </tr>
+    {% else %}<tr><td colspan="5">No data in range.</td></tr>{% endfor %}
+  </table>
+</div>
+{% elif kind == "low" %}
+<div class="card">
+  <table>
+    <tr><th>Medicine</th><th>On hand</th><th>Reorder</th></tr>
+    {% for row in low_stock %}
+    <tr><td>{{ row.medicine.name }}</td><td>{{ row.on_hand }}</td><td>{{ row.medicine.reorder_level }}</td></tr>
+    {% else %}<tr><td colspan="3">No data in range.</td></tr>{% endfor %}
+  </table>
+</div>
+{% else %}
+<div class="card">
+  <table>
+    <tr><th>Medicine</th><th>Batch</th><th>Expiry</th><th>Qty</th></tr>
+    {% for b in near_expiry %}
+    <tr><td>{{ b.medicine.name }}</td><td>{{ b.batch_number }}</td><td>{{ b.expiry_date }}</td><td>{{ b.quantity_on_hand }}</td></tr>
+    {% else %}<tr><td colspan="4">No data in range.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set title = "Pharmacy settings" %}
+{% block body %}
+<div class="page-header">
+  <div>
+    <h1>Pharmacy settings</h1>
+    <p>Configure your pharmacy details for receipts, reports, and the login screen.</p>
+  </div>
+</div>
+<div class="card" style="max-width:640px">
+  <form method="post" action="/admin/settings">
+    <label>Pharmacy name</label>
+    <input name="name" value="{{ settings.name }}" required>
+    <label>Address</label>
+    <input name="address" value="{{ settings.address or "" }}">
+    <label>Phone</label>
+    <input name="phone" value="{{ settings.phone or "" }}">
+    <label>Receipt footer message</label>
+    <input name="receipt_footer" value="{{ settings.receipt_footer or "" }}">
+    <label>Near-expiry warning (days)</label>
+    <input type="number" name="near_expiry_days" value="{{ settings.near_expiry_days }}" min="1">
+    <label>Currency code</label>
+    <input name="currency_code" value="{{ settings.currency_code }}" maxlength="3">
+    <p style="margin-top:20px"><button class="btn" type="submit">Save settings</button></p>
+  </form>
+</div>
+{% endblock %}

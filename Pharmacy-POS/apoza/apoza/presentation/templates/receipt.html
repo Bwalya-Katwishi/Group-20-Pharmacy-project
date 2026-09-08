@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% set title = "Receipt" %}
+{% block body %}
+<div class="no-print receipt-actions">
+  <a class="btn" href="/pos">New sale</a>
+  <button class="btn ghost" onclick="window.print()">Print receipt</button>
+</div>
+<div class="receipt">
+  <h1>{{ settings.name }}</h1>
+  <p class="muted" style="text-align:center">{{ settings.address or "" }}{% if settings.phone %}<br>{{ settings.phone }}{% endif %}</p>
+  <div class="receipt-divider"></div>
+  <p style="text-align:center"><strong>RECEIPT #S-{{ sale.sale_id }}</strong></p>
+  <p class="muted" style="text-align:center">{{ sale.completed_at }} · {{ sale.sold_by.full_name }}</p>
+  <div class="receipt-divider"></div>
+  <table>
+    {% for item in sale.items %}
+    <tr>
+      <td>{{ item.medicine.product_code }} · {{ item.medicine.name }} × {{ item.quantity }}<br><span class="muted">Batch {{ item.batch.batch_number }}</span></td>
+      <td style="text-align:right">{{ "%.2f"|format(item.line_total) }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <div class="receipt-divider"></div>
+  <table>
+    <tr><td>Total</td><td style="text-align:right"><strong>{{ settings.currency_code }} {{ "%.2f"|format(sale.total) }}</strong></td></tr>
+    {% if sale.payment %}
+    <tr><td>Amount received</td><td style="text-align:right">{{ "%.2f"|format(sale.payment.amount_tendered) }}</td></tr>
+    <tr><td><strong>Change</strong></td><td style="text-align:right"><strong>{{ settings.currency_code }} {{ "%.2f"|format(sale.payment.change_due) }}</strong></td></tr>
+    <tr><td>Payment</td><td style="text-align:right">{{ sale.payment.method }}</td></tr>
+    {% endif %}
+  </table>
+  {% if sale.prescription %}<p>Prescription ref: {{ sale.prescription.reference_no }}</p>{% endif %}
+  <p class="muted" style="text-align:center;margin-top:16px">{{ settings.receipt_footer or "" }}</p>
+</div>
+{% endblock %}

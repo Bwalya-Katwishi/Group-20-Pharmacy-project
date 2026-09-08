@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Secrets and local config
+.env
+.env.local
+*.pem
+*.key
+
+# Local database (seeded on first run)
+Pharmacy-POS/apoza/data/*.db
+Pharmacy-POS/apoza/data/*.db-*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Office temp lock files
+~$*

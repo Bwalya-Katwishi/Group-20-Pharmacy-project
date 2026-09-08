@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% set title = "Record payment" %}
+{% block body %}
+<div class="page-header">
+  <div>
+    <h1>Record payment</h1>
+    <p>Confirm payment method and complete the sale.</p>
+  </div>
+</div>
+<div class="card" style="max-width:640px">
+  <p class="muted">Amount due</p>
+  <p class="total">{{ settings.currency_code }} {{ "%.2f"|format(sale.total) }}</p>
+  <form method="post" action="/pos/pay">
+    <label>Payment method</label>
+    <select name="method">
+      <option value="CASH">Cash</option>
+      <option value="CARD">Card</option>
+      <option value="MOBILE_MONEY">Mobile money (Airtel / MTN / Zamtel)</option>
+    </select>
+    <label>Amount tendered</label>
+    <input name="amount_tendered" type="number" step="0.01" min="0" value="{{ "%.2f"|format(sale.total) }}" required>
+    <label>Reference number (card / mobile money)</label>
+    <input name="external_reference" placeholder="Optional confirmation or transaction ID">
+    <p class="note">Card and mobile money payments are confirmed manually at the counter. This system records the transaction but does not connect to live payment gateways.</p>
+    <p class="row">
+      <button class="btn pay" type="submit">Complete sale</button>
+      <a class="btn ghost" href="/pos">Back to sale</a>
+    </p>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+Table,Column,Data Type,PK,FK,Nullable,Description
+users,user_id,INT,Y,,N,Surrogate primary key.
+users,username,VARCHAR(50),,,N,Unique login name.
+users,full_name,VARCHAR(120),,,N,Display name on receipts and audit.
+users,role,VARCHAR(20),,,N,ADMINISTRATOR or PHARMACIST.
+users,password_hash,VARCHAR(255),,,N,Salted hash only. Never plaintext.
+users,password_salt,VARCHAR(64),,,N,Per-user salt if not embedded in the hash.
+users,is_active,BOOLEAN,,,N,Deactivated accounts cannot authenticate.
+users,created_at,DATETIME,,,N,Account creation time.
+users,last_login_at,DATETIME,,,Y,Last successful login.
+pharmacy_settings,pharmacy_id,INT,Y,,N,Single-row settings key for this deployment.
+pharmacy_settings,name,VARCHAR(160),,,N,Pharmacy trading name.
+pharmacy_settings,address,VARCHAR(255),,,Y,Printed on receipts.
+pharmacy_settings,phone,VARCHAR(40),,,Y,Printed on receipts.
+pharmacy_settings,receipt_footer,VARCHAR(255),,,Y,Thank-you or regulatory line.
+pharmacy_settings,near_expiry_days,INT,,,N,Days used for near-expiry alerts.
+pharmacy_settings,currency_code,CHAR(3),,,N,ZMW for this project.
+medicine_categories,category_id,INT,Y,,N,Primary key.
+medicine_categories,name,VARCHAR(80),,,N,Unique category name.
+medicine_categories,description,VARCHAR(255),,,Y,Optional note.
+medicines,medicine_id,INT,Y,,N,Primary key.
+medicines,product_code,VARCHAR(40),,,N,Unique SKU / product code.
+medicines,name,VARCHAR(160),,,N,Brand or dispensing name.
+medicines,generic_name,VARCHAR(160),,,Y,INN / generic name.
+medicines,strength,VARCHAR(40),,,Y,For example 500 mg.
+medicines,form,VARCHAR(40),,,Y,"Tablet, syrup, cream."
+medicines,category_id,INT,,medicine_categories.category_id,Y,Optional category.
+medicines,requires_prescription,BOOLEAN,,,N,True for prescription-only items.
+medicines,unit_price,"DECIMAL(12,2)",,,N,Current selling price.
+medicines,reorder_level,INT,,,N,Low-stock threshold.
+medicines,is_active,BOOLEAN,,,N,Inactive medicines are not sold.
+suppliers,supplier_id,INT,Y,,N,Primary key.
+suppliers,name,VARCHAR(160),,,N,Supplier trading name.
+suppliers,phone,VARCHAR(40),,,Y,Contact phone.
+suppliers,address,VARCHAR(255),,,Y,Contact address.
+suppliers,is_active,BOOLEAN,,,N,Soft delete flag.
+stock_batches,batch_id,INT,Y,,N,Primary key.
+stock_batches,medicine_id,INT,,medicines.medicine_id,N,Medicine of this batch.
+stock_batches,batch_number,VARCHAR(60),,,N,Manufacturer / supplier batch no.
+stock_batches,expiry_date,DATE,,,N,Not sellable after this date.
+stock_batches,quantity_on_hand,INT,,,N,Current sellable quantity.
+stock_batches,unit_cost,"DECIMAL(12,2)",,,Y,Optional cost for valuation.
+stock_batches,received_at,DATETIME,,,N,First receipt time.
+stock_receipts,receipt_id,INT,Y,,N,Primary key.
+stock_receipts,supplier_id,INT,,suppliers.supplier_id,N,Source supplier.
+stock_receipts,received_by_user_id,INT,,users.user_id,N,Administrator who received.
+stock_receipts,received_at,DATETIME,,,N,Receipt time.
+stock_receipts,reference_note,VARCHAR(120),,,Y,Delivery note number.
+stock_receipt_lines,receipt_line_id,INT,Y,,N,Primary key.
+stock_receipt_lines,receipt_id,INT,,stock_receipts.receipt_id,N,Parent receipt.
+stock_receipt_lines,batch_id,INT,,stock_batches.batch_id,N,Batch increased.
+stock_receipt_lines,quantity,INT,,,N,Quantity received.
+stock_adjustments,adjustment_id,INT,Y,,N,Primary key.
+stock_adjustments,batch_id,INT,,stock_batches.batch_id,N,Adjusted batch.
+stock_adjustments,adjusted_by_user_id,INT,,users.user_id,N,Administrator.
+stock_adjustments,quantity_delta,INT,,,N,Signed quantity change.
+stock_adjustments,reason,VARCHAR(40),,,N,"DAMAGE, EXPIRY, RECOUNT, RECALL."
+stock_adjustments,note,VARCHAR(255),,,Y,Free-text explanation.
+stock_adjustments,adjusted_at,DATETIME,,,N,When the change occurred.
+customers,customer_id,INT,Y,,N,Primary key.
+customers,full_name,VARCHAR(160),,,N,Patient or buyer name.
+customers,phone,VARCHAR(40),,,Y,Optional phone.
+customers,address,VARCHAR(255),,,Y,Optional address.
+customers,created_at,DATETIME,,,N,When first recorded.
+prescriptions,prescription_id,INT,Y,,N,Primary key.
+prescriptions,customer_id,INT,,customers.customer_id,N,Named patient.
+prescriptions,reference_no,VARCHAR(60),,,N,Paper / clinic reference.
+prescriptions,prescriber_name,VARCHAR(160),,,Y,Doctor or clinic if known.
+prescriptions,issued_on,DATE,,,Y,Prescription date if known.
+prescriptions,recorded_by_user_id,INT,,users.user_id,N,Pharmacist who recorded it.
+prescriptions,recorded_at,DATETIME,,,N,Capture time.
+prescription_items,prescription_item_id,INT,Y,,N,Primary key.
+prescription_items,prescription_id,INT,,prescriptions.prescription_id,N,Parent prescription.
+prescription_items,medicine_id,INT,,medicines.medicine_id,N,Authorised medicine.
+prescription_items,quantity,INT,,,N,Authorised quantity.
+sales,sale_id,INT,Y,,N,Primary key.
+sales,sold_by_user_id,INT,,users.user_id,N,Pharmacist/Cashier.
+sales,customer_id,INT,,customers.customer_id,Y,Optional customer.
+sales,prescription_id,INT,,prescriptions.prescription_id,Y,Optional linked prescription.
+sales,status,VARCHAR(20),,,N,"IN_PROGRESS, COMPLETED, VOIDED."
+sales,started_at,DATETIME,,,N,makeNewSale time.
+sales,completed_at,DATETIME,,,Y,Completion or void time.
+sales,void_reason,VARCHAR(255),,,Y,Required when VOIDED.
+sales,subtotal,"DECIMAL(12,2)",,,N,Sum of line totals.
+sales,total,"DECIMAL(12,2)",,,N,Amount due.
+sale_items,sale_item_id,INT,Y,,N,Primary key.
+sale_items,sale_id,INT,,sales.sale_id,N,Parent sale.
+sale_items,medicine_id,INT,,medicines.medicine_id,N,Sold medicine.
+sale_items,batch_id,INT,,stock_batches.batch_id,N,Batch decremented.
+sale_items,quantity,INT,,,N,Quantity sold.
+sale_items,unit_price,"DECIMAL(12,2)",,,N,Price at time of sale.
+sale_items,line_total,"DECIMAL(12,2)",,,N,quantity * unit_price.
+payments,payment_id,INT,Y,,N,Primary key.
+payments,sale_id,INT,,sales.sale_id,N,Paid sale (1:1 for this design).
+payments,method,VARCHAR(20),,,N,"CASH, CARD, MOBILE_MONEY."
+payments,amount_tendered,"DECIMAL(12,2)",,,N,Amount given or confirmed.
+payments,change_due,"DECIMAL(12,2)",,,N,Cash change; zero otherwise.
+payments,external_reference,VARCHAR(80),,,Y,Card/mobile confirmation note.
+payments,paid_at,DATETIME,,,N,Payment time.
+audit_logs,audit_id,INT,Y,,N,Primary key.
+audit_logs,user_id,INT,,users.user_id,Y,Null only for failed unknown login.
+audit_logs,action,VARCHAR(40),,,N,"LOGIN, LOGIN_FAIL, SALE_COMPLETE, VOID, STOCK_RECEIPT, STOCK_ADJUST, USER_ADMIN."
+audit_logs,entity_name,VARCHAR(40),,,Y,Affected table or concept.
+audit_logs,entity_id,INT,,,Y,Affected key.
+audit_logs,details,VARCHAR(500),,,Y,Non-sensitive summary.
+audit_logs,occurred_at,DATETIME,,,N,Event time.

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% set title = "Manage medicines" %}
+{% block body %}
+<div class="card">
+  <table>
+    <tr><th>Code</th><th>Name</th><th>Rx?</th><th>Price</th><th>Active</th><th></th></tr>
+    {% for m in rows %}
+    <tr>
+      <td>{{ m.product_code }}</td>
+      <td>{{ m.name }}</td>
+      <td>{{ "Yes" if m.requires_prescription else "No" }}</td>
+      <td>{{ "%.2f"|format(m.unit_price) }}</td>
+      <td>{{ "Yes" if m.is_active else "No" }}</td>
+      <td><a href="/admin/medicines/{{ m.medicine_id }}">Edit</a></td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<div class="card">
+  <h2>{{ "Edit medicine" if edit else "New medicine" }}</h2>
+  <form method="post" action="/admin/medicines">
+    <input type="hidden" name="medicine_id" value="{{ edit.medicine_id if edit else "" }}">
+    <div class="row">
+      <div><label>Product code</label><input name="product_code" value="{{ edit.product_code if edit else "" }}" required></div>
+      <div><label>Name</label><input name="name" value="{{ edit.name if edit else "" }}" required></div>
+    </div>
+    <div class="row">
+      <div><label>Generic name</label><input name="generic_name" value="{{ edit.generic_name if edit else "" }}"></div>
+      <div><label>Strength</label><input name="strength" value="{{ edit.strength if edit else "" }}"></div>
+      <div><label>Form</label><input name="form" value="{{ edit.form if edit else "" }}"></div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Category</label>
+        <select name="category_id">
+          <option value="">—</option>
+          {% for c in categories %}
+          <option value="{{ c.category_id }}" {% if edit and edit.category_id==c.category_id %}selected{% endif %}>{{ c.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div><label>Unit price ({{ settings.currency_code }})</label><input name="unit_price" value="{{ edit.unit_price if edit else "" }}" required></div>
+      <div><label>Reorder level</label><input type="number" name="reorder_level" value="{{ edit.reorder_level if edit else 10 }}"></div>
+    </div>
+    <label><input type="checkbox" name="requires_prescription" {% if edit and edit.requires_prescription %}checked{% endif %}> Prescription required</label>
+    <label><input type="checkbox" name="is_active" {% if not edit or edit.is_active %}checked{% endif %}> Active (can be sold)</label>
+    <p><button class="btn" type="submit">Save</button> <a class="btn ghost" href="/admin/medicines">Clear</a></p>
+  </form>
+</div>
+{% endblock %}

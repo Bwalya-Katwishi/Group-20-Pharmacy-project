@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ product }} · {{ title or "Pharmacy POS" }}</title>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand-block">
+      <div class="brand-mark">Rx</div>
+      <div class="brand-text">
+        <strong>{{ settings.name if settings else product }}</strong>
+        <span>{{ product_tagline }}</span>
+      </div>
+      {% if title %}<div class="page-title">{{ title }}</div>{% endif %}
+    </div>
+    <div class="top-right">
+      <div class="user-chip">
+        <b>{{ user.full_name }}</b>
+        <em>{{ role_label }}</em>
+      </div>
+    </div>
+  </header>
+  <nav class="side">
+    {% if user.role == "ADMINISTRATOR" %}
+      <div class="nav-label">Management</div>
+      <a class="{{ 'active' if nav=='dashboard' }}" href="/admin"><span class="nav-icon">◫</span> Dashboard</a>
+      <a class="{{ 'active' if nav=='medicines' }}" href="/admin/medicines"><span class="nav-icon">✚</span> Medicines</a>
+      <a class="{{ 'active' if nav=='inventory' }}" href="/admin/inventory"><span class="nav-icon">▤</span> Inventory</a>
+      <a class="{{ 'active' if nav=='suppliers' }}" href="/admin/suppliers"><span class="nav-icon">⛟</span> Suppliers</a>
+      <div class="nav-label">System</div>
+      <a class="{{ 'active' if nav=='users' }}" href="/admin/users"><span class="nav-icon">👤</span> Users</a>
+      <a class="{{ 'active' if nav=='reports' }}" href="/admin/reports"><span class="nav-icon">▥</span> Reports</a>
+      <a class="{{ 'active' if nav=='settings' }}" href="/admin/settings"><span class="nav-icon">⚙</span> Settings</a>
+    {% else %}
+      <div class="nav-label">Dispensing</div>
+      <a class="{{ 'active' if nav=='sale' }}" href="/pos"><span class="nav-icon">⊕</span> New sale</a>
+      <a class="{{ 'active' if nav=='today' }}" href="/pos/sales"><span class="nav-icon">▥</span> Today's sales</a>
+      <a class="{{ 'active' if nav=='void' }}" href="/pos/void"><span class="nav-icon">✕</span> Void sale</a>
+    {% endif %}
+    <div class="side-spacer"></div>
+    <form method="post" action="/logout">
+      <button class="nav nav-signout" type="submit"><span class="nav-icon">→</span> Sign out</button>
+    </form>
+  </nav>
+  <main class="main">
+    {% if flash %}<div class="flash {{ flash.kind }}">{{ flash.message }}</div>{% endif %}
+    {% block body %}{% endblock %}
+  </main>
+</div>
+</body>
+</html>

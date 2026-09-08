@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% set title = "Void sale" %}
+{% block body %}
+<div class="card">
+  <p class="note">A void keeps the sale visible. Completed voids restore stock. There is no silent delete.</p>
+  <table>
+    <tr><th>Sale</th><th>Status</th><th>Total</th><th>Void</th></tr>
+    {% for s in rows %}
+    <tr>
+      <td>#S-{{ s.sale_id }} · {{ s.sold_by.full_name }}</td>
+      <td>{{ s.status }}</td>
+      <td>{{ "%.2f"|format(s.total) }}</td>
+      <td>
+        {% if s.status != "VOIDED" %}
+        <form method="post" action="/pos/void" class="row">
+          <input type="hidden" name="sale_id" value="{{ s.sale_id }}">
+          <input name="reason" required placeholder="Reason">
+          <button class="btn danger" type="submit">Void</button>
+        </form>
+        {% else %}Already voided{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

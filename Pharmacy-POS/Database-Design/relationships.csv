@@ -1,0 +1,20 @@
+From,To,FromCardinality,ToCardinality,Meaning
+users,sales,1,0..*,A pharmacist records many sales.
+users,stock_receipts,1,0..*,An administrator records many receipts.
+users,stock_adjustments,1,0..*,An administrator records many adjustments.
+medicine_categories,medicines,1,0..*,A category groups many medicines.
+medicines,stock_batches,1,0..*,A medicine has many batches.
+suppliers,stock_receipts,1,0..*,A supplier is the source of many receipts.
+stock_receipts,stock_receipt_lines,1,1..*,A receipt contains lines.
+stock_batches,stock_receipt_lines,1,0..*,A batch may be increased by receipt lines.
+stock_batches,stock_adjustments,1,0..*,A batch may be adjusted many times.
+customers,prescriptions,1,0..*,A customer may have many recorded prescriptions.
+customers,sales,1,0..*,A customer may appear on many sales.
+prescriptions,prescription_items,1,1..*,A prescription lists items.
+medicines,prescription_items,1,0..*,A medicine may appear on prescriptions.
+prescriptions,sales,1,0..1,A prescription may be linked to a sale.
+sales,sale_items,1,1..*,A sale contains line items.
+medicines,sale_items,1,0..*,A medicine appears on many sale lines.
+stock_batches,sale_items,1,0..*,A batch is sold on many lines over time.
+sales,payments,1,0..1,A completed sale has one payment in this design.
+users,audit_logs,1,0..*,A user generates many audit rows.

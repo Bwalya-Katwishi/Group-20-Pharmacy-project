@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% set title = "Dashboard" %}
+{% block body %}
+<div class="page-header">
+  <div>
+    <h1>Pharmacy dashboard</h1>
+    <p>Overview for {{ today }} · {{ settings.currency_code }} currency</p>
+  </div>
+</div>
+<div class="kpis">
+  <div class="kpi">
+    <span class="kpi-label">Sales today</span>
+    <span class="kpi-value">{{ settings.currency_code }} {{ "%.2f"|format(today_total) }}</span>
+    <span class="kpi-sub">Completed transactions</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Transactions</span>
+    <span class="kpi-value">{{ today_count }}</span>
+    <span class="kpi-sub">Sales recorded today</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Low stock</span>
+    <span class="kpi-value">{{ low_stock|length }}</span>
+    <span class="kpi-sub">Below reorder level</span>
+  </div>
+  <div class="kpi">
+    <span class="kpi-label">Expiry alerts</span>
+    <span class="kpi-value">{{ near_expiry|length + expired|length }}</span>
+    <span class="kpi-sub">Near expiry or expired on shelf</span>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><h2>Low stock — reorder required</h2></div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Medicine</th><th>On hand</th><th>Reorder level</th><th>Status</th></tr>
+      {% for row in low_stock %}
+      <tr>
+        <td>{{ row.medicine.name }}</td>
+        <td>{{ row.on_hand }}</td>
+        <td>{{ row.medicine.reorder_level }}</td>
+        <td><span class="badge warn">Reorder</span></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4"><div class="empty-state"><p>All medicines are above reorder levels.</p></div></td></tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<div class="card">
+  <div class="card-header"><h2>Expiry alerts</h2></div>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Status</th><th>Medicine</th><th>Batch</th><th>Expiry date</th><th>Qty on hand</th></tr>
+      {% for b in near_expiry %}
+      <tr>
+        <td><span class="badge warn">Near expiry</span></td>
+        <td>{{ b.medicine.name }}</td>
+        <td>{{ b.batch_number }}</td>
+        <td>{{ b.expiry_date }}</td>
+        <td>{{ b.quantity_on_hand }}</td>
+      </tr>
+      {% endfor %}
+      {% for b in expired %}
+      <tr>
+        <td><span class="badge danger">Expired</span></td>
+        <td>{{ b.medicine.name }}</td>
+        <td>{{ b.batch_number }}</td>
+        <td>{{ b.expiry_date }}</td>
+        <td>{{ b.quantity_on_hand }}</td>
+      </tr>
+      {% endfor %}
+      {% if not near_expiry and not expired %}
+      <tr><td colspan="5"><div class="empty-state"><p>No expiry alerts at this time.</p></div></td></tr>
+      {% endif %}
+    </table>
+  </div>
+</div>
+{% endblock %}
